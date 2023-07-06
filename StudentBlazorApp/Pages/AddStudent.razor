@@ -1,0 +1,819 @@
+﻿@page "/AddStudent"
+@using Microsoft.EntityFrameworkCore;
+@using StudentBlazorApp.Data
+@inject ApplicationDbContext _dbContext
+@inject NavigationManager NavigationManager
+@inject StudentServices stdservice
+
+<style>
+    p {
+        color: red;
+        font-size: 130%;
+        margin: 15% 0% 0% 25%;
+    }
+
+    .col {
+        width: 50%;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .control-label {
+        font-weight: bold;
+    }
+
+    .control-select {
+        font-weight: bold;
+        margin-top: 3%;
+    }
+
+    .form-check-input {
+        margin-right: 5px;
+    }
+
+    /* Custom Styles */
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    h3 {
+        color: #333;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .form-control {
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+        .form-control:focus {
+            outline: none;
+            box-shadow: 0 0 5px #339af0;
+        }
+
+    .btn-primary {
+        background-color: #339af0;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .btn-primary:hover {
+            background-color: #1c7ed6;
+        }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+        .table th,
+        .table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+    .border {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 4px;
+    }
+</style>
+
+<div style="margin: 0% 10% 0% 10%;">
+    <div style="justify-content:space-between;display:flex;">
+        <div class="col">
+            <h3>AddStudent</h3>
+        </div>
+        <div class="form-group col-2">
+            @if (stdservice.shownav)
+            {
+                <div style="display:flex;">
+                    <label style="margin-top: 3%;" class="control-select">Role:  </label>
+                    <select class="form-control" style="text-align:center;" @oninput="OnRoleSelectionChanged">
+                        @if (rolelist != null)
+                        {
+                            @foreach (var role in rolelist.OrderByDescending(m => m.RoleId))
+                            {
+                                <option value="@role.RoleId">@role.RoleName</option>
+                            }
+
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+    <EditForm EditContext="editContext">
+        <DataAnnotationsValidator />
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="Name" class="control-label">First Name<span style="color:#ff2d2d;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.FirstName)" />
+                        </div>
+                    </div>
+                    <input maxlength="20" class="form-control" @bind="@obj.FirstName" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="Name" class="control-label">Last Name<span style="color:#ff2d2d;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.LastName)" />
+                        </div>
+                    </div>
+                    <input maxlength="20" class="form-control" @bind="@obj.LastName" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="Dob" class="control-label">Date Of Birth<span style="color:#ff2d2d;">*</span></label>
+                        </div>
+                        <div class="col">
+                            @if (!string.IsNullOrWhiteSpace(reqdob))
+                            {
+                                <label style="color:#ff2d2d;">@reqdob</label>
+                            }
+                            <ValidationMessage For="@(() => obj.Dob)" />
+                        </div>
+                    </div>
+                    <input type="date" id="Dob" class="form-control" @bind-value="@obj.Dob" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="Gender" class="control-label">Gender<span style="color:#ff2d2d;">*</span></label><br />
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.Gender)" />
+                        </div>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="radio" id="gender-male" name="gender" value="Male" checked="@(obj.Gender == "Male" ? "checked" : null)" @onchange="OnGenderSelectionChanged" class="form-check-input " />
+                        <label for="gender-male" class="form-check-label">Male</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="radio" id="gender-female" name="gender" value="Female" checked="@(obj.Gender == "Female" ? "checked" : null)" @onchange="OnGenderSelectionChanged" class="form-check-input" />
+                        <label for="gender-female" class="form-check-label">Female</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            <label class="control-label">Father Name<span style="color:#ff2d2d;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.FatherName)" />
+                        </div>
+                    </div>
+                    <input maxlength="20" class="form-control" @bind="@obj.FatherName" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            <label class="control-label">Mother Name<span style="color:#ff2d2d;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.MotherName)" />
+                        </div>
+                    </div>
+                    <input maxlength="20" class="form-control" @bind="@obj.MotherName" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="Phoneno" class="control-label">PhoneNumber<span style="color:#ff2d2d;">*</span></label>
+                        </div>
+                        <div class="col">
+                            @if (reqphone != null)
+                            {
+                                <label style="color:#ff2d2d;">@reqphone</label>
+                            }
+                            else
+                            {
+                                <ValidationMessage For="@(() => obj.PhoneNumber)" />
+                            }
+                        </div>
+                    </div>
+                    <input class="form-control" @bind="@obj.PhoneNumber" maxlength="10" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="EmailAddress" class="control-label">EmailAddress<span style="color:#ff2d2d;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.EmailAddress)" />
+                        </div>
+                    </div>
+                    <input maxlength="20" form="EmailAddress" class="form-control" type="text" @bind="@obj.EmailAddress" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="Password" class="control-label">Password<span style="color:#ff2d2d;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.Password)" />
+                        </div>
+                    </div>
+                    <input maxlength="20" class="form-control" type="password" @bind="@obj.Password" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4"><label class="control-label">Confirm Password<span style="color:#ff2d2d;">*</span></label></div>
+                        <div class="col">
+                            @if (passmismatch != null)
+                            {
+                                <label style="font-size:90%;color:#ff2d2d;">@passmismatch</label>
+                            }
+                        </div>
+                    </div>
+                    <input class="form-control" type="password" @bind="@confirmpass" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="Address" class="control-label">Address<span style="color:#ff2d2d;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.Address)" />
+                        </div>
+                    </div>
+                    <input maxlength="20" class="form-control" type="text" @bind="@obj.Address" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="ZipCode" class="control-label">Zip Code<span style="color:#ff2d2d;">*</span></label>
+                        </div>
+                        <div class="col">
+                            @if (reqzip != null)
+                            {
+                                <label style="color:#ff2d2d;">@reqzip</label>
+                            }
+                        </div>
+                    </div>
+                    <input maxlength="6" class="form-control" @bind="@obj.ZipCode" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3"><label for="Country" class="control-select">Country<span style="color:#ff2d2d;">*</span></label></div>
+                        <div class="col">
+                            @if (countrynotselected != null)
+                            {
+                                <label style="color:#ff2d2d;">@countrynotselected</label>
+                            }
+                        </div>
+                    </div>
+                    <select class="form-control" @bind="@obj.Country" @oninput="OnCountrySelectionChanged">
+                        <option value="0" disabled>Select Country</option>
+                        @if (countries != null)
+                        {
+                            @foreach (var country in countries)
+                            {
+                                if (country.IsSeelcted)
+                                {
+                                    <option value="@country.CountryId" selected>@country.CountryName</option>
+                                }
+                                else
+                                {
+                                    <option value="@country.CountryId">@country.CountryName</option>
+                                }
+                            }
+
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3"><label for="State" class="control-select">State<span style="color:#ff2d2d;">*</span></label></div>
+                        <div class="col">
+                            @if (statenotselected != null)
+                            {
+                                <label style="color:#ff2d2d;">@statenotselected</label>
+                            }
+                        </div>
+                    </div>
+                    <select class="form-control" @bind="@obj.State" @oninput="OnStateSelectionChanged">
+                        <option value="0" selected disabled>Select State</option>
+                        @if (states != null)
+                        {
+                            @foreach (var state in states)
+                            {
+                                <option value="@state.StateId">@state.StateName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3"><label for="City" class="control-select">City<span style="color:#ff2d2d;">*</span></label></div>
+                        <div class="col">
+                            @if (citynotselected != null)
+                            {
+                                <label style="color:#ff2d2d;">@citynotselected</label>
+                            }
+                        </div>
+                    </div>
+                    <select class="form-control" @bind="@obj.City" @oninput="OnCitySelectionChanged">
+                        <option value="0" disabled>Select City</option>
+                        @if (cities != null)
+                        {
+                            foreach (var city in cities)
+                            {
+                                <option value="@city.CityId">@city.CityName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-4 border" style="padding-top:2%;width: 98%;margin-left: 1%;">
+                <div class="col-3">
+                    <div class="form-group border" style="width:75%">
+                        <label style="font-size:20px;margin-left:10%;">Select Hobbies</label><br />
+                        @if (hobbies != null)
+                        {
+                            foreach (var item in hobbies)
+                            {
+                                <input style="margin-left:20px" type="checkbox" value="@item.HobbyName" checked="@item.isselected" @onchange="e => item.isselected = bool.Parse(e.Value.ToString())" />
+
+                                @item.HobbyName
+
+                                <br />
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="" style="justify-content:space-between;display:flex;">
+                        <div class="col-3">
+                            <h3>Qualification</h3>
+                        </div>
+                        <div class="col">
+                            @if (qualificationserror != null)
+                            {
+                                <label style="color:#ff2d2d;">@qualificationserror</label>
+                            }
+                        </div>
+                        <div class="column-2">
+                            <button class="btn btn-primary" type="button" @onclick="AddNewRow"><span class="oi oi-plus"></span> Add</button>
+                        </div>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Qualification</th>
+                                <th>University</th>
+                                <th>Term Year</th>
+                                <th>Year of Completion</th>
+                                <th>Percentage</th>
+                                <td>Delete</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var qualification in qualifications)
+                            {
+                                <tr>
+                                    <td><input maxlength="20" class="form-control col-md-3" style="width:100%" type="text" @bind="@qualification.QualifiactionName" /></td>
+                                    <td><input maxlength="20" class="form-control col-md-3" style="width:100%" type="text" @bind="@qualification.University" /></td>
+                                    <td><input maxlength="20" class="form-control col-md-3" style="width:100%" type="text" @bind="@qualification.TermYear" /></td>
+                                    <td><input maxlength="20" class="form-control col-md-3" style="width:100%" type="text" @bind="@qualification.CompletationYear" /></td>
+                                    <td><input maxlength="20" class="form-control col-md-3" style="width:100%" type="text" @bind="@qualification.decimalpercentage" /></td>
+                                    <td><p class="oi oi-trash text-center" @onclick="(e) => deletequalification(qualification)"></p></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group mt-2" style="text-align:right">
+            <input type="submit" class="btn btn-success" @onclick="@HandleValidSubmit" value="Save" />
+            <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private int selectedCountryId;
+    private int selectedStateId;
+    private int selectedcityId;
+    private List<Country> countries = new List<Country>();
+    private List<State> states = new List<State>();
+    private List<City> cities = new List<City>();
+    private List<TblQualification> qualifications = new List<TblQualification>();
+    private string confirmpass = null;
+    private string passmismatch = null;
+    private string countrynotselected = null;
+    private string statenotselected = null;
+    private string citynotselected = null;
+    private string qualificationserror = null;
+    private string reqzip = null;
+    private string reqphone = null;
+    private string reqdob = null;
+    private List<Course> courses;
+    private int selectedcourse;
+    private int selectedbatch;
+    private List<Batch> batches;
+    private Batch batch;
+    private List<Course2Student> C2SList = new List<Course2Student>();
+    private List<ViewModel> CourseList = null;
+    bool isshow = false;
+    private int seatcount;
+    private string maxseat;
+    private List<Role> rolelist;
+    private int selectedRole;
+
+    bool isValidationEnabled = false;
+    private EditContext editContext;
+
+    TblStudent obj = new TblStudent();
+    TblQualification qobj = new TblQualification();
+
+    private List<Hobby> hobbies = new List<Hobby>();
+
+    private async void BuyCourses()
+    {
+        isshow = true;
+    }
+    private async void RemoveAdd()
+    {
+        isshow = false;
+        batch = null;
+    }
+    private async void CourseADD()
+    {
+        isshow = false;
+        Course2Student newCourse2Student = new Course2Student
+            {
+                StudentId = obj.StudentId,
+                CourseId = selectedcourse,
+                BatchId = selectedbatch
+            };
+        C2SList.Add(newCourse2Student);
+        CourseList = await Task.Run(() => stdservice.GettingCoursesList(C2SList));
+        StateHasChanged();
+        batch = null;
+    }
+    private async void deletecourse(int id)
+    {
+        var data = C2SList.Where(m => m.BatchId == id).FirstOrDefault();
+        C2SList.Remove(data);
+        CourseList = await Task.Run(() => stdservice.GettingCoursesList(C2SList));
+        StateHasChanged();
+        batch = null;
+    }
+    private async Task OnCourseSelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            selectedbatch = 0;
+            selectedcourse = int.Parse(e.Value.ToString());
+            batches = await _dbContext.Batches.Where(m => m.CourseId == selectedcourse).ToListAsync();
+            int count;
+            count = (CourseList == null) ? 0 : CourseList.Count;
+            for (int i = 0; i < batches.Count; i++)
+            {
+                for (int j = 0; j < count; j++)
+
+                {
+                    if (CourseList[j].BatchProp.BatchId == batches[i].BatchId)
+                    {
+                        batches[i].isbought = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+    }
+    private async Task OnRoleSelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            selectedRole = int.Parse(e.Value.ToString());
+            if (selectedRole == 0)
+            {
+                selectedRole = 2;
+            }
+        }
+
+    }
+    private async Task OnBatchSelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            maxseat = null;
+            selectedbatch = int.Parse(e.Value.ToString());
+            batch = await _dbContext.Batches.Where(m => m.BatchId == selectedbatch).FirstOrDefaultAsync();
+            var list = await _dbContext.Course2StudentMapps.Where(m => m.BatchId == selectedbatch).ToListAsync();
+            seatcount = list.Count;
+            if (seatcount >= batch.Seats)
+            {
+                maxseat = "All seats are resered in this batch. Try another batch......";
+            }
+        }
+
+    }
+
+    private void AddNewRow()
+    {
+        isValidationEnabled = false;
+        //editContext.Validate();
+        qualifications.Add(new TblQualification());
+    }
+    private void OnGenderSelectionChanged(ChangeEventArgs e)
+    {
+        obj.Gender = e.Value.ToString();
+    }
+    private async void OnCountrySelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            selectedCountryId = int.Parse(e.Value.ToString());
+            states = await _dbContext.States.Where(m => m.CountryId == selectedCountryId).OrderBy(m => m.StateName).ToListAsync();
+            obj.State = 0;
+        }
+
+    }
+    private async void OnStateSelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            selectedStateId = int.Parse(e.Value.ToString());
+            cities = await _dbContext.Cities.Where(m => m.StateId == selectedStateId).OrderBy(m => m.CityName).ToListAsync();
+            selectedcityId = 0;
+        }
+
+    }
+    private void OnCitySelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            selectedcityId = int.Parse(e.Value.ToString());
+        }
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(obj);
+        courses = await _dbContext.Courses.ToListAsync();
+        rolelist = await _dbContext.Roles.ToListAsync();
+        AddNewRow();
+        obj.Dob = new DateTime(2001, 1, 1);
+        countries = await _dbContext.Countries.OrderBy(m => m.CountryName).ToListAsync();
+        hobbies = await _dbContext.Hobbies.ToListAsync();
+        // Client requirement 2 : India
+        foreach (var item in countries)
+        {
+            if (item.CountryId == 2)
+            {
+                states = await _dbContext.States.Where(m => m.CountryId == item.CountryId).ToListAsync();
+                item.IsSeelcted = true;
+                selectedCountryId = item.CountryId;
+            }
+        }
+        foreach (var item in hobbies)
+        {
+            item.isselected = false;
+        }
+    }
+
+    private bool IsValidPhoneNumber(string phoneNumber)
+    {
+        //string phoneNumberPattern = @"^\+?[0-9]{1,3}-?[0-9]{3,4}-?[0-9]{4,}$";
+        string phoneNumberPattern = @"^[0-9]{10}$";
+        return !string.IsNullOrWhiteSpace(phoneNumber) && System.Text.RegularExpressions.Regex.IsMatch(phoneNumber, phoneNumberPattern);
+    }
+    protected async void HandleValidSubmit()
+    {
+        bool error = false;
+        passmismatch = (obj.Password != confirmpass) ? "Password and Confirm Password mismatched" : null;
+        if (passmismatch != null) error = true;
+
+        countrynotselected = (selectedCountryId == 0) ? "Please select a Country." : null;
+        if (countrynotselected != null) error = true;
+
+        statenotselected = (selectedStateId == 0) ? "Please select a State." : null;
+        if (statenotselected != null) error = true;
+
+        citynotselected = (selectedcityId == 0) ? "Please select a City." : null;
+        if (citynotselected != null) error = true;
+
+        reqphone = (obj.PhoneNumber == 0) ? "Phone No is Required" : null;
+        if (reqphone != null) error = true;
+
+        reqzip = (obj.ZipCode == 0) ? "ZipCode is Required" : null;
+        if (reqzip != null) error = true;
+
+        if (string.IsNullOrWhiteSpace(obj.PhoneNumber.ToString()) || !IsValidPhoneNumber(obj.PhoneNumber.ToString()))
+        {
+            reqphone = "Please enter a valid phone number.(It should be 10 digits)";
+            error = true;
+        }
+        DateTime date = new DateTime(1950, 1, 1);
+        if (obj.Dob > DateTime.Now || obj.Dob < date)
+        {
+            reqdob = "DOB can only be in (01/01/1950 to yesterday)";
+            error = true;
+        }
+
+        if (error) return;
+
+        if (selectedRole == 0)
+        {
+            selectedRole = 2;
+        }
+        obj.RegistrationId = await stdservice.GetRegistrationId();
+        obj.Country = selectedCountryId;
+        obj.State = selectedStateId;
+        obj.IsActive = true;
+        obj.City = selectedcityId;
+        obj.RoleId = selectedRole;
+        isValidationEnabled = true;
+
+        var isValid = editContext.Validate();
+
+        if (isValid)
+        {
+            await stdservice.InsertStudentsAsync(obj);
+        }
+        else
+        {
+            var invalidFields = editContext.GetValidationMessages();
+            return;
+        }
+        foreach (var item in qualifications)
+        {
+            if (item.QualifiactionName != null && item.University != null && item.decimalpercentage != null)
+            {
+                string name = item.QualifiactionName;
+                string pattern = @"^[a-zA-Z\s]+$";
+                if (!System.Text.RegularExpressions.Regex.IsMatch(name, pattern) || string.IsNullOrWhiteSpace(name.ToString()))
+                {
+                    qualificationserror = "Qualification Name will only accept letters.";
+                    return;
+                }
+
+                name = item.University;
+                if (!System.Text.RegularExpressions.Regex.IsMatch(name, pattern) || string.IsNullOrWhiteSpace(name.ToString()))
+                {
+
+                    qualificationserror = "University Name will only accept letters.";
+                    return;
+                }
+
+                if (item.CompletationYear == 0 && item.TermYear == 0)
+                {
+                    qualificationserror = "Term Year and Year of Completation cannot be 0";
+                    return;
+                }
+                decimal per = 0;
+                try
+                {
+                    per = decimal.Parse(item.decimalpercentage);
+                    if (per > 100)
+                    {
+                        qualificationserror = "Percentage cannot be more than 100.";
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                    qualificationserror = "Percentage is not Valid.";
+
+                    return;
+                }
+                item.StudentId = obj.StudentId;
+                item.Percentage = decimal.Parse(item.decimalpercentage);
+                await _dbContext.TblQualifications.AddAsync(item);
+                await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                qualificationserror = "All Fields are required in Qualification Section";
+                error = true;
+            }
+
+        }
+        foreach (var item in hobbies)
+        {
+            if (item.isselected == true)
+            {
+                Hobby2StudentMapp hobj = new Hobby2StudentMapp();
+                hobj.HobbyId = item.HobbyId;
+                hobj.StudentId = obj.StudentId;
+                await _dbContext.Hobby2StudentMapps.AddAsync(hobj);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        foreach (var item in C2SList)
+        {
+            Course2Student c2s = new Course2Student();
+            c2s.StudentId = obj.StudentId;
+            c2s.CourseId = item.CourseId;
+            c2s.BatchId = item.BatchId;
+            await _dbContext.Course2StudentMapps.AddAsync(c2s);
+            await _dbContext.SaveChangesAsync();
+        }
+        NavigationManager.NavigateTo("/");
+    }
+    private async void deletequalification(TblQualification item)
+    {
+        qualificationserror = null;
+        if (item != null)
+        {
+            qualifications.Remove(item);
+            if (item.StdQlfId != 0)
+            {
+                _dbContext.TblQualifications.Remove(item);
+                await _dbContext.SaveChangesAsync();
+                qualifications = await _dbContext.TblQualifications.Where(m => m.StudentId == obj.StudentId).ToListAsync();
+            }
+        }
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

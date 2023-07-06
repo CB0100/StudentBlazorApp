@@ -1,0 +1,448 @@
+﻿@page "/courselist"
+@using Microsoft.EntityFrameworkCore;
+@using StudentBlazorApp.Data
+@inject ApplicationDbContext _dbContext
+@inject NavigationManager NavigationManager
+
+<div class="row">
+    <div class="col-8">
+        <div class="" style="display:flex;align-items:center;">
+            <h3>Specifications List</h3>
+            <button class="btn btn-primary" @onclick="() => ToggleSpecForm()">Add Specification</button>
+        </div>
+        @foreach (var spec in specifications)
+        {
+            <div class="course-container">
+                <div class="course-lists">
+                    <h4>@spec.SpecName</h4>
+                    <button class="btn btn-primary" @onclick="() => ToggleCourseList(spec)">+</button>
+                </div>
+
+                @if (showCourseList && selectedSpec?.SpecId == spec.SpecId)
+                {
+                    <div class="course-list border" style="padding: 2% 5% 2% 5%; background-color:aliceblue">
+                        <div class="course-header border-bottom pb-2 mb-2">
+                            <h4>Courses</h4>
+                            <button class="btn btn-primary" @onclick="() => ToggleCourseForm(selectedSpec)">Add Course</button>
+                        </div>
+                        @if (specCourses.ContainsKey(spec.SpecId) && specCourses[spec.SpecId].Any())
+                        {
+                            @foreach (var course in specCourses[spec.SpecId])
+                            {
+                                <div class="course-container">
+                                    <div class="course-lists" style="width:100%">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Fees</th>
+                                                    <th>Features</th>
+                                                    <th>View Batches</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><h5>@course.CourseName</h5></td>
+                                                    <td>@course.Fees</td>
+                                                    <td>
+                                                        <ul>
+                                                            @if (course.LiveClass)
+                                                            {
+                                                                <li><p>Live Classes</p></li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li><p><s>Live Classes</s></p></li>
+                                                            }
+                                                            @if (course.RecordedClass)
+                                                            {
+                                                                <li><p>Recorded Classes</p></li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li><p><s>Recorded Classes</s></p></li>
+                                                            }
+                                                            @if (course.MockTest)
+                                                            {
+                                                                <li><p>Mock Test</p></li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li><p><s>Mock Tests</s></p></li>
+                                                            }
+                                                            @if (course.DoubtSolvingSession)
+                                                            {
+                                                                <li><p>Doubt Solving Session</p></li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li><p><s>Doubt Solving Session</s></p></li>
+                                                            }
+                                                            @if (course.DPP)
+                                                            {
+                                                                <li><p>Daily Practice Problems</p></li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li><p><s>Daily Practice Problems</s></p></li>
+                                                            }
+                                                        </ul>
+                                                    </td>
+                                                    <td><button class="btn btn-primary" @onclick="() => ToggleBatchList(course)">+</button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    @if (showBatchlist && selectedCourse?.CourseId == course.CourseId)
+                                    {
+                                        <div class="border" style="padding:2% 2% 2% 2%; background-color:#ccc;">
+                                            <div class="course-header">
+                                                <p>Batches of @course.CourseName</p>
+                                                <button class="btn btn-primary" @onclick="() => ToggleBatchForm(course)">Add Batch</button>
+                                            </div>
+                                            <div class="batch-list">
+                                                @if (courseBatches.ContainsKey(course.CourseId) && courseBatches[course.CourseId].Any())
+                                                {
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Batch</th>
+                                                                <th>Starting Time</th>
+                                                                <th>Ending Time</th>
+                                                                <th>Seats</th>
+                                                                <th>Reserved Seats</th>
+                                                                <th>Instructor</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var batch in courseBatches[course.CourseId])
+                                                            {
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="batch-item">
+                                                                            <span>@batch.BatchName</span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="batch-item">
+                                                                            @{
+                                                                                string formatstrtdTime = $"{(@batch.BatchStartTime.Hours % 12 == 0 ? 12 : @batch.BatchStartTime.Hours % 12)}:{@batch.BatchStartTime.Minutes:D2} {(@batch.BatchStartTime.Hours >= 12 ? "PM" : "AM")}";
+                                                                                <span>@formatstrtdTime</span>
+                                                                            }
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="batch-item">
+                                                                            @{
+                                                                                string formatendTime = $"{(@batch.BatchEndTime.Hours % 12 == 0 ? 12 : @batch.BatchEndTime.Hours % 12)}:{@batch.BatchEndTime.Minutes:D2} {(@batch.BatchEndTime.Hours >= 12 ? "PM" : "AM")}";
+                                                                                <span>@formatendTime</span>
+                                                                            }
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="batch-item">
+                                                                            <span>@batch.Seats</span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="batch-item">
+                                                                            <span>@bookedseat</span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="batch-item">
+                                                                            <span>@batch.InstructorName</span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                                else
+                                                {
+                                                    <p>No batches found for this course.</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p>No courses found for this specification.</p>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+    @if (showSpecForm)
+    {
+        <div class="col-4">
+            <div class="course-form">
+                <h4>Add Specification</h4>
+                    <div class="form-group">
+                        <label for="specName">Specification Name:</label>
+                    <input maxlength="20" type="text" id="specName" class="form-control" @bind="@newSpec.SpecName" />
+                    </div>
+
+                    <button class="btn btn-primary mt-2" @onclick="SaveSpecification">Save</button>
+            </div>
+        </div>
+    }
+    else if (showCourseForm)
+    {
+        <div class="col-4">
+            <div class="course-form">
+                <h4>Add Course for @selectedSpec.SpecName</h4>
+                    <div class="form-group">
+                        <label for="courseName">Course Name:</label>
+                    <input maxlength="20" type="text" id="courseName" class="form-control" @bind="@newCourse.CourseName" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fees">Fees:</label>
+                        <input  maxlength="7" type="number" id="fees" class="form-control" @bind="@newCourse.Fees" />
+                    </div>
+                    <div class="form-group">
+                        <label for="liveClass">Live Class:</label>
+                        <input type="checkbox" id="liveClass" class="form-check-input" @bind="@newCourse.LiveClass" />
+                    </div>
+                    <div class="form-group">
+                        <label for="recordedClass">Recorded Class:</label>
+                        <input type="checkbox" id="recordedClass" class="form-check-input" @bind="@newCourse.RecordedClass" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mockTest">Mock Test:</label>
+                        <input type="checkbox" id="mockTest" class="form-check-input" @bind="@newCourse.MockTest" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="doubtSolvingSession">Doubt Solving Session:</label>
+                        <input type="checkbox" id="doubtSolvingSession" class="form-check-input" @bind="@newCourse.DoubtSolvingSession" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dpp">DPP (Daily Practice Problems):</label>
+                        <input type="checkbox" id="dpp" class="form-check-input" @bind="@newCourse.DPP" />
+                    </div>
+
+                <button class="btn btn-primary mt-2" @onclick="SaveCourse">Save</button>
+            </div>
+        </div>
+    }
+    else if (showBatchForm)
+    {
+        <div class="col-4">
+            <div class="batch-form">
+                <h4>Add Batch for @selectedCourse.CourseName</h4>
+                    <div class="form-group">
+                        <label for="batchName">Batch Name:</label>
+                    <input maxlength="20" type="text" id="batchName" class="form-control" @bind="@batch.BatchName" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="batchStartTime">Batch Start Time:</label>
+                        <input type="time" id="batchStartTime" class="form-control" value="@batch.BatchStartTime.ToString(@"hh\:mm")" @oninput="e => batch.BatchStartTime = TimeSpan.Parse(e.Value.ToString())" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="batchEndTime">Batch End Time:</label>
+                        <input type="time" id="batchEndTime" class="form-control" value="@batch.BatchEndTime.ToString(@"hh\:mm")" @oninput="e => batch.BatchEndTime = TimeSpan.Parse(e.Value.ToString())" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="instructorName">Instructor Name:</label>
+                        <input  maxlength="20" type="text" id="instructorName" class="form-control" @bind="@batch.InstructorName" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="seats">Seats:</label>
+                        <input  maxlength="2" type="number" id="seats" class="form-control" @bind="@batch.Seats" />
+                    </div>
+
+                <button class="btn btn-primary mt-2" @onclick="SaveBatch">Save</button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+
+    List<Specification> specifications = new List<Specification>();
+    Specification selectedSpec;
+    Course selectedCourse;
+    bool showCourseList = false;
+    bool showBatchlist = false;
+    bool showCourseForm = false;
+    bool showBatchForm = false;
+    bool showSpecForm = false;
+    Specification newSpec = new Specification();
+
+    Dictionary<int, List<Course>> specCourses = new Dictionary<int, List<Course>>();
+    Dictionary<int, List<Batch>> courseBatches = new Dictionary<int, List<Batch>>();
+    Course newCourse = new Course();
+    Batch batch = new Batch();
+    private int bookedseat;
+
+    protected override async Task OnInitializedAsync()
+    {
+        specifications = await _dbContext.Specifications.ToListAsync();
+
+    }
+
+    private async Task ToggleSpecForm()
+    {
+        showCourseForm = false;
+        showBatchForm = false;
+        showSpecForm = !showSpecForm;
+        newSpec = new Specification();
+    }
+
+    private async Task ToggleCourseList(Specification spec)
+    {
+        showBatchlist = false;
+        if (selectedSpec == spec)
+        {
+            showCourseList = !showCourseList;
+        }
+        else
+        {
+            selectedSpec = spec;
+            showCourseList = true;
+        }
+
+        if (showCourseList)
+        {
+            var courses = await _dbContext.Courses.Where(c => c.SpecId == selectedSpec.SpecId).ToListAsync();
+            specCourses[selectedSpec.SpecId] = courses;
+        }
+
+    }
+
+    private async Task ToggleCourseForm(Specification spec)
+    {
+        showSpecForm = false;
+        showBatchForm = false;
+        showCourseForm = !showCourseForm;
+        selectedSpec = spec;
+        newCourse = new Course();
+    }
+    private async Task ToggleBatchList(Course course)
+    {
+        if (selectedCourse == course)
+        {
+            showBatchlist = !showBatchlist;
+        }
+        else
+        {
+            selectedCourse = course;
+            showBatchlist = true;
+        }
+
+        if (showBatchlist)
+        {
+            var batches = await _dbContext.Batches.Where(b => b.CourseId == selectedCourse.CourseId).ToListAsync();
+            courseBatches[selectedCourse.CourseId] = batches;
+        }
+    }
+
+    private async Task ToggleBatchForm(Course course)
+    {
+        showCourseForm = false;
+        showSpecForm = false;
+        showBatchForm = !showBatchForm;
+        selectedCourse = course;
+        batch = new Batch();
+
+        if (showBatchForm)
+        {
+            var batches = await _dbContext.Batches.Where(b => b.CourseId == selectedCourse.CourseId).ToListAsync();
+            courseBatches[selectedCourse.CourseId] = batches;
+        }
+
+    }
+
+    private async Task SaveSpecification()
+    {
+        await _dbContext.Specifications.AddAsync(newSpec);
+        await _dbContext.SaveChangesAsync();
+        specifications.Add(newSpec);
+        showSpecForm = false;
+    }
+    private async Task SaveCourse()
+    {
+        newCourse.SpecId = selectedSpec.SpecId;
+        await _dbContext.Courses.AddAsync(newCourse);
+        await _dbContext.SaveChangesAsync();
+
+        specCourses[selectedSpec.SpecId].Add(newCourse);
+        showCourseForm = false;
+    }
+
+    private async Task SaveBatch()
+    {
+        batch.CourseId = selectedCourse.CourseId;
+        await _dbContext.Batches.AddAsync(batch);
+        await _dbContext.SaveChangesAsync();
+
+        courseBatches[selectedCourse.CourseId].Add(batch);
+        showBatchForm = false;
+    }
+}
+
+<style>
+    .course-container {
+        margin-bottom: 10px;
+    }
+
+    .course-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        .course-header h4 {
+            margin: 0;
+        }
+
+    .batch-list {
+        margin-top: 10px;
+        padding-left: 20px;
+        border-left: 2px solid #ccc;
+    }
+
+    .batch-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+    .batch-form {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f7f7f7;
+    }
+
+    .course-form {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f7f7f7;
+    }
+
+    .course-lists {
+        width: 60%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+</style>

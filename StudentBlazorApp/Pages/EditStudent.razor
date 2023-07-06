@@ -1,0 +1,1085 @@
+﻿@page "/EditEmployee/{Id}"
+@using Microsoft.EntityFrameworkCore;
+@using StudentBlazorApp.Data
+@using System.Collections.Generic
+@using Microsoft.AspNetCore.Components
+@inject StudentServices stdservice
+@inject ApplicationDbContext _dbContext
+@inject NavigationManager NavigationManager
+<style>
+    p {
+        color: red;
+        font-size: 130%;
+        margin: 15% 0% 0% 25%;
+    }
+
+    .col {
+        width: 50%;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .control-label {
+        font-weight: bold;
+    }
+
+    .control-select {
+        font-weight: bold;
+        margin-top: 3%;
+    }
+
+    .form-check-input {
+        margin-right: 5px;
+    }
+
+    /* Custom Styles */
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    h3 {
+        color: #333;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .form-control {
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+        .form-control:focus {
+            outline: none;
+            box-shadow: 0 0 5px #339af0;
+        }
+
+    .btn-primary {
+        background-color: #339af0;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .btn-primary:hover {
+            background-color: #1c7ed6;
+        }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+        .table th,
+        .table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+
+    .border {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 4px;
+    }
+</style>
+<div style="margin: 0% 10% 0% 10%;">
+    <h2>Edit Student</h2>
+    <hr />
+    <EditForm EditContext="editContext">
+        <DataAnnotationsValidator />
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="Name" class="control-label">First Name<span style="color:#ff2626;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.FirstName)" />
+                        </div>
+                    </div>
+                    <input class="form-control" @bind="@obj.FirstName"  maxlength="20"/>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="Name" class="control-label">Last Name<span style="color:#ff2626;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.LastName)" />
+                        </div>
+                    </div>
+                    <input class="form-control" @bind="@obj.LastName" maxlength="20" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="Dob" class="control-label">Date Of Birth<span style="color:#ff2626;">*</span></label>
+                        </div>
+                        <div class="col">
+                            @*<ValidationMessage For="@(() => obj.Dob)" />*@
+                        </div>
+                    </div>
+                    <input type="date" id="Dob" class="form-control" @bind="@obj.Dob" disabled />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="Gender" class="control-label">Gender<span style="color:#ff2626;">*</span></label><br />
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.Gender)" />
+                        </div>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="radio" id="gender-male" name="gender" value="Male" checked="@(obj.Gender == "Male" ? "checked" : null)" @onchange="OnGenderSelectionChanged" class="form-check-input " />
+                        <label for="gender-male" class="form-check-label">Male</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="radio" id="gender-female" name="gender" value="Female" checked="@(obj.Gender == "Female" ? "checked" : null)" @onchange="OnGenderSelectionChanged" class="form-check-input" />
+                        <label for="gender-female" class="form-check-label">Female</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label class="control-label">Father Name<span style="color:#ff2626;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.FatherName)" />
+                        </div>
+                    </div>
+                    <input maxlength="20" class="form-control" @bind="@obj.FatherName" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label class="control-label">Mother Name<span style="color:#ff2626;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.MotherName)" />
+                        </div>
+                    </div> 
+                    <input maxlength="20" class="form-control" @bind="@obj.MotherName" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="Phoneno" class="control-label">PhoneNumber<span style="color:#ff2626;">*</span></label>
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+                    <input class="form-control" value="@obj.PhoneNumber" disabled />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="EmailAddress" class="control-label">EmailAddress<span style="color:#ff2626;">*</span></label>
+                        </div>
+                        <div class="col">
+                            @*<ValidationMessage For="@(() => obj.EmailAddress)" />*@
+                        </div>
+                    </div>
+                    <input form="EmailAddress" class="form-control" type="text" value="@obj.EmailAddress" disabled />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="Address" class="control-label">Address<span style="color:#ff2626;">*</span></label>
+                        </div>
+                        <div class="col">
+                            <ValidationMessage For="@(() => obj.Address)" />
+                        </div>
+                    </div>
+                    <input maxlength="20" class="form-control" type="text" @bind="@obj.Address" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="ZipCode" class="control-label">Zip Code<span style="color:#ff2626;">*</span></label>
+                        </div>
+                        <div class="col">
+                            @if (Zipcode != null)
+                            {
+                                <label style="color:#ff2626;">@Zipcode</label>
+                            }
+                        </div>
+                    </div>
+                    <input  maxlength="6" class="form-control" @bind="@obj.ZipCode" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5"><label for="Country" class="control-select">Country<span style="color:#ff2626;">*</span></label></div>
+                        <div class="col">
+                            @if (countrynotselected != null)
+                            {
+                                <label style="color:#ff2626;">@countrynotselected</label>
+                            }
+                        </div>
+                    </div>
+                    <select class="form-control" @bind="@obj.Country" @oninput="OnCountrySelectionChanged">
+                        <option value="0" disabled>Select Country</option>
+                        @if (countries != null)
+                        {
+                            foreach (var country in countries)
+                            {
+                                if (country.IsSeelcted)
+                                {
+                                    <option value="@country.CountryId" selected>@country.CountryName</option>
+                                }
+                                else
+                                {
+                                    <option value="@country.CountryId">@country.CountryName</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3"><label for="State" class="control-select">State<span style="color:#ff2626;">*</span></label></div>
+                        <div class="col">
+                            @if (statenotselected != null)
+                            {
+                                <label style="color:#ff2626;">@statenotselected</label>
+                            }
+                        </div>
+                    </div>
+                    <select class="form-control" @bind="@obj.State" @oninput="OnStateSelectionChanged">
+                        <option value="0" selected disabled>Select State</option>
+                        @if (states != null)
+                        {
+                            @foreach (var state in states)
+                            {
+                                if (state.IsSelected)
+                                {
+                                    <option value="@state.StateId" selected>@state.StateName</option>
+                                }
+                                else
+                                {
+                                    <option value="@state.StateId">@state.StateName</option>
+                                }
+                            }
+                        }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3"><label for="City" class="control-select">City<span style="color:#ff2626;">*</span></label></div>
+                        <div class="col">
+                            @if (citynotselected != null)
+                            {
+                                <label style="color:#ff2626;">@citynotselected</label>
+                            }
+                        </div>
+                    </div>
+                    <select class="form-control" @bind="@obj.City" @oninput="OnCitySelectionChanged">
+                        <option value="0" disabled>Select City</option>
+                        @if (cities != null)
+                        {
+                            @foreach (var city in cities)
+                            {
+                                if (city.IsSelected)
+                                {
+                                    <option value="@city.CityId" selected>@city.CityName</option>
+                                }
+                                else
+                                {
+                                    <option value="@city.CityId">@city.CityName</option>
+                                }
+                            }
+                        }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-4 border" style="padding-top:2%;width: 98%;margin-left: 1%;">
+                <div class="col-3">
+                    <div class="form-group border" style="width:75%">
+                        <label style="font-size:20px;margin-left:10%;">Select Hobbies</label><br />
+                        @if (hobbies != null)
+                        {
+                            foreach (var item in hobbies)
+                            {
+                                <input style="margin-left:20px" type="checkbox" value="@item.HobbyName" checked="@item.isselected" @onchange="e => item.isselected = bool.Parse(e.Value.ToString())" />
+                                @item.HobbyName
+                                <br />
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="" style="justify-content:space-between;display:flex;">
+                        <div class="col-3">
+                            <h3>Qualification</h3>
+                        </div>
+                        <div class="col">
+                            @if (qualificationserror != null)
+                            {
+                                <label style="color:#ff2626;">@qualificationserror</label>
+                            }
+                        </div>
+                        <div class="column-2">
+                            <button class="btn btn-primary" type="button" @onclick="AddNewRow"><span class="oi oi-plus"></span> Add</button>
+                        </div>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Qualification</th>
+                                <th>University</th>
+                                <th>Term Year</th>
+                                <th>Year of Completion</th>
+                                <th>Percentage</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var qualification in qualifications)
+                            {
+                                <tr>
+                                    <td><input  maxlength="20" class="form-control col-md-3" style="width:100%" type="text" @bind="@qualification.QualifiactionName" /></td>
+                                    <td><input  maxlength="20" class="form-control col-md-3" style="width:100%" type="text" @bind="@qualification.University" /></td>
+                                    <td><input  maxlength="20" class="form-control col-md-3" style="width:100%" type="text" @bind="@qualification.TermYear" /></td>
+                                    <td><input  maxlength="20" class="form-control col-md-3" style="width:100%" type="text" @bind="@qualification.CompletationYear" /></td>
+                                    <td><input maxlength="20" class="form-control col-md-3" style="width:100%" type="text" @bind="@qualification.decimalpercentage" /></td>
+                                    <td><p class="oi oi-trash text-center" @onclick="(e) => deletequalification(qualification)"></p></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="">
+            <div class="mt-4 border" style="padding:1%;">
+                <div style="justify-content:space-between;display:flex;">
+                    <div class="col-3">
+                        <h3>Your Courses</h3>
+                    </div>
+                    <div class="column-2">
+                        <button class="btn btn-primary" type="button" @onclick="BuyCourses"><span class="oi oi-cart"></span> Buy Courses</button>
+                    </div>
+                </div>
+                @if (isshow)
+                {
+                    <div class="border" style="background-color: darkgray;margin: 1% 4% 1% 4%;padding: 1% 1% 1% 1%;">
+                        <div class="col">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-5"><label class="control-select">Which Specification Coaching are you looking for :)</label></div>
+                                    <div class="col">
+                                    </div>
+                                </div>
+                                <select class="form-control" @oninput="OnSpecSelectionChanged">
+                                    <option value="0" selected disabled>Select Specification</option>
+                                    @if (specifications != null)
+                                    {
+                                        foreach (var spec in specifications)
+                                        {
+                                            <option value="@spec.SpecId">@spec.SpecName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-5"><label class="control-select">Course</label></div>
+                                        <div class="col">
+                                        </div>
+                                    </div>
+                                    <select class="form-control" @oninput="OnCourseSelectionChanged">
+                                        @if (selectedcourse == 0)
+                                        {
+                                            <option value="0" selected>Select Course</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="0">Select Course</option>
+                                        }
+                                        @if (courses != null)
+                                        {
+                                            foreach (var course in courses)
+                                            {
+                                                <option value="@course.CourseId">@course.CourseName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="column-2"><label class="control-select">Batches</label></div>
+                                        <div class="col"></div>
+                                    </div>
+                                    <select class="form-control" @oninput="OnBatchSelectionChanged">
+                                        @if (selectedbatch == 0)
+                                        {
+                                            <option value="0" selected>Select Batch</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="0">Select Batch</option>
+                                        }
+                                        @if (batches != null)
+                                        {
+                                            @foreach (var batch in batches)
+                                            {
+                                                if (!batch.isbought)
+                                                {
+                                                    <option value="@batch.BatchId">@batch.BatchName</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            @if (course != null)
+                            {
+                                <h5 style="margin-left:3%;">Course Description</h5>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Fees</th>
+                                            <th>Features</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><h5>@course.CourseName</h5></td>
+                                            <td>@course.Fees</td>
+                                            <td>
+                                                <ul>
+                                                    @if (course.LiveClass)
+                                                    {
+                                                        <li>Live Classes</li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li><s>Live Classes</s></li>
+                                                    }
+                                                    @if (course.RecordedClass)
+                                                    {
+                                                        <li>Recorded Classes</li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li><s>Recorded Classes</s></li>
+                                                    }
+                                                    @if (course.MockTest)
+                                                    {
+                                                        <li>Mock Test</li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li><s>Mock Tests</s></li>
+                                                    }
+                                                    @if (course.DoubtSolvingSession)
+                                                    {
+                                                        <li>Doubt Solving Session</li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li><s>Doubt Solving Session</s></li>
+                                                    }
+                                                    @if (course.DPP)
+                                                    {
+                                                        <li>Daily Practice Problems</li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li><s>Daily Practice Problems</s></li>
+                                                    }
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                            @if (batch != null && maxseat == null)
+                            {
+                                <h5 style="margin-left:3%;">Batch Description</h5>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Instructor</th>
+                                            <th>Starting Time</th>
+                                            <th>Ending Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@batch.BatchName</td>
+                                            <td>@batch.InstructorName</td>
+                                            <td>@batch.BatchStartTime</td>
+                                            <td>@batch.BatchEndTime</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                @if (!makepay)
+                                {
+                                    <div>
+                                        <button class="btn btn-success" @onclick="CourseADD">Add Course</button>
+                                        <button class="btn btn-danger ms-2" @onclick="RemoveAdd">Cancel</button>
+                                    </div>
+                                }
+                                @if (makepay && course != null)
+                                {
+                                    <div>
+                                        <h3>Make Payment for @batch.BatchName Batch</h3>
+                                        <table style="text-align:right" class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th style="">Payment for</th>
+                                                    <th>Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td style=";">Coaching Fees</td>
+                                                    <td> @course.Fees</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style=" ">Tax(5%)</td>
+                                                    <td>@((course.Fees * taxRate).ToString("0.00"))</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="">Total</td>
+                                                    <td>@(((course.Fees * taxRate) + course.Fees).ToString("0.00"))</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div style="justify-content:space-between;align-items:self-end;display:flex;">
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="column-2">
+                                                        <label class="control-label">UPI Id<span style="color:#ff2626;">*</span></label>
+                                                    </div>
+                                                    <div class="col">
+                                                        @if (error != null)
+                                                        {
+                                                            <label style="color:#ff2626;">@error</label>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <input  maxlength="20" style="width:200%;" class="form-control" @bind="@upiid" />
+                                            </div>
+                                            <div class="">
+                                                <button class="btn btn-success" @onclick="PayandBuy">Buy Course</button>
+                                                <button class="btn btn-danger ms-2" @onclick="RemoveAdd">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <label class="text-danger text-center">@maxseat</label>
+                            }
+                        </div>
+                    </div>
+                }
+                @if (bought)
+                {
+                    @if (batch != null)
+                    {
+                        <div class="d-inline-flex">
+                            <label style="margin-top: 2%;font-size: 20px;">You have successfully enrolled with @batch.BatchName Batch</label>
+                            <button class="btn btn-danger ms-2" @onclick="RemoveAdd">Ok</button>
+                            <button class="btn btn-primary ms-2" type="button" @onclick="receipt"><span>Get Reciept</span></button>
+                        </div>
+                    }
+                }
+                <div class="mt-2">
+                    @if (CourseList != null)
+                    {
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Specification</th>
+                                    <th>Course</th>
+                                    <th>Batch</th>
+                                    <th>Batch Start Time</th>
+                                    <th>Batch End Time</th>
+                                    <th>Instructor Name</th>
+                                    <th>Get Receipt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var Course in CourseList)
+                                {
+                                    <tr>
+                                        <td>@Course.Specprop.SpecName</td>
+                                        <td>@Course.CourseProp.CourseName</td>
+                                        <td>@Course.BatchProp.BatchName</td>
+                                        <td>
+                                            @{
+
+                                                string formatstrtdTime = $"{(@Course.BatchProp.BatchStartTime.Hours % 12 == 0 ? 12 : @Course.BatchProp.BatchStartTime.Hours % 12)}:{@Course.BatchProp.BatchStartTime.Minutes:D2} {(@Course.BatchProp.BatchStartTime.Hours >= 12 ? "PM" : "AM")}";
+                                                                                <span>@formatstrtdTime</span>                                                                           
+                                            }
+                                            </td>
+                                        <td>
+                                            @{
+
+                                                string formatendTime = $"{(@Course.BatchProp.BatchEndTime.Hours % 12 == 0 ? 12 : @Course.BatchProp.BatchEndTime.Hours % 12)}:{@Course.BatchProp.BatchEndTime.Minutes:D2} {(@Course.BatchProp.BatchEndTime.Hours >= 12 ? "PM" : "AM")}";
+                                                <span>@formatendTime</span>
+                                            }
+                                        </td>
+                                        <td>@Course.BatchProp.InstructorName</td>
+                                        <td><button class="btn btn-primary ms-2" type="button" @onclick="(e) => getreceipt(Course.c2sMapp.Id)"><span class="oi oi-task"></span></button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="form-group mt-2" style="text-align:right">
+            <input type="submit" class="btn btn-success" @onclick="@HandleValidSubmit" value="Save" />
+            <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+        </div>
+    </EditForm>
+</div>
+@code {
+    #region
+    [Parameter]
+    public string Id { get; set; }
+    TblStudent obj = new TblStudent();
+    private string countrynotselected;
+    private string statenotselected;
+    private string citynotselected;
+    private List<Country> countries;
+    private List<Hobby> hobbies;
+    private List<ViewModel> CourseList;
+    public int count;
+    private List<City> cities;
+    private List<TblQualification> qualifications = new List<TblQualification>();
+    private List<Course2Student> C2SList = new List<Course2Student>();
+    private List<State> states;
+    private string Zipcode;
+    private EditContext editContext;
+    private DateTime storeddate;
+    private bool isshow = false;
+    private List<Course> courses;
+    private List<Specification> specifications;
+    private int selectedcourse;
+    private int selectedspec;
+    private int selectedbatch;
+    private List<Batch> batches;
+    private Batch batch;
+    private Course course;
+    decimal taxRate = 0.05m;
+    private int seatcount;
+    private string maxseat;
+    public string upiid;
+    public string error;
+    public Course2Student c2sclass;
+    private bool makepay;
+    private bool bought;
+    private string qualificationserror;
+    #endregion
+    private void OnGenderSelectionChanged(ChangeEventArgs e)
+    {
+        obj.Gender = e.Value.ToString();
+    }
+    private void AddNewRow()
+    {
+        qualifications.Add(new TblQualification());
+    }
+    private async void BuyCourses()
+    {
+        isshow = true;
+    }
+    private async void RemoveAdd()
+    {
+        isshow = false;
+        bought = false;
+        batch = null;
+    }
+    private async void CourseADD()
+    {
+        makepay = true;
+    }
+    private async void getreceipt(int c2sid)
+    {
+        bought = false;
+        int id = c2sid;
+        NavigationManager.NavigateTo($"/fetchdata/{id}", forceLoad: true);
+    }
+    private async void receipt()
+    {
+        bought = false;
+        int id = c2sclass.Id;
+        NavigationManager.NavigateTo($"/fetchdata/{id}", forceLoad: true);
+    }
+    private async void PayandBuy()
+    {
+        if (upiid == null)
+        {
+            error = "UPI Id cannot be null..";
+            return;
+        }
+        makepay = false;
+        isshow = false;
+        bought = true;
+        Course2Student newCourse2Student = new Course2Student
+            {
+                StudentId = obj.StudentId,
+                CourseId = selectedcourse,
+                BatchId = selectedbatch,
+                CreatedOn = DateTime.Now,
+                tax = taxRate,
+                TotalPaid = ((course.Fees * taxRate) + course.Fees),
+                UPIID = upiid
+            };
+        await _dbContext.Course2StudentMapps.AddAsync(newCourse2Student);
+        await _dbContext.SaveChangesAsync();
+        c2sclass = newCourse2Student;
+        CourseList = await Task.Run(() => stdservice.GetCoursesList(Convert.ToInt32(Id)));
+        StateHasChanged();
+        batch = null;
+    }
+    private async Task OnCourseSelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            selectedcourse = int.Parse(e.Value.ToString());
+            course = await _dbContext.Courses.Where(m => m.CourseId == selectedcourse).FirstOrDefaultAsync();
+            batches = await _dbContext.Batches.Where(m => m.CourseId == selectedcourse).ToListAsync();
+            for (int i = 0; i < batches.Count; i++)
+            {
+                for (int j = 0; j < CourseList.Count; j++)
+                {
+                    if (CourseList[j].BatchProp.BatchId == batches[i].BatchId)
+                    {
+                        batches[i].isbought = true;
+                        break;
+                    }
+                }
+            }
+
+        }
+    }
+    private async Task OnSpecSelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            selectedspec = int.Parse(e.Value.ToString());
+            courses = await _dbContext.Courses.Where(m => m.SpecId == selectedspec).ToListAsync();
+            if (courses == null) batches = null;
+            selectedcourse = 0;
+            course = null;
+
+            // Reset batch selection
+            selectedbatch = 0;
+            batch = null;
+            maxseat = null;
+        }
+    }
+    private async Task OnBatchSelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            maxseat = null;
+            selectedbatch = int.Parse(e.Value.ToString());
+            batch = await _dbContext.Batches.Where(m => m.BatchId == selectedbatch).FirstOrDefaultAsync();
+            var list = await _dbContext.Course2StudentMapps.Where(m => m.BatchId == selectedbatch).ToListAsync();
+            seatcount = list.Count;
+            if (seatcount >= batch.Seats)
+            {
+                maxseat = "All seats are resered in this batch. Try another batch......";
+            }
+        }
+    }
+    private async Task OnCountrySelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            obj.Country = int.Parse(e.Value.ToString());
+            states = await _dbContext.States.Where(m => m.CountryId == obj.Country).OrderBy(m => m.StateName).ToListAsync();
+            obj.State = 0;
+            obj.City = 0;
+        }
+    }
+    private async Task OnStateSelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            obj.State = int.Parse(e.Value.ToString());
+            cities = await _dbContext.Cities.Where(m => m.StateId == obj.State).OrderBy(m => m.CityName).ToListAsync();
+            obj.City = 0;
+        }
+    }
+    private void OnCitySelectionChanged(ChangeEventArgs e)
+    {
+        if (e != null)
+        {
+            obj.City = int.Parse(e.Value.ToString());
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(obj);
+        specifications = await _dbContext.Specifications.ToListAsync();
+        courses = await _dbContext.Courses.ToListAsync();
+        AddNewRow();
+        obj = await Task.Run(() => stdservice.GetStudentsAsync(Convert.ToInt32(Id)));
+        editContext = new EditContext(obj);
+        storeddate = obj.Dob;
+        CourseList = await Task.Run(() => stdservice.GetCoursesList(Convert.ToInt32(Id)));
+        qualifications = await _dbContext.TblQualifications.Where(m => m.StudentId == obj.StudentId).ToListAsync();
+        foreach (var item in qualifications)
+        {
+            item.decimalpercentage = item.Percentage.ToString();
+        }
+        count = qualifications.Count - 1;
+        var datalist = await _dbContext.Hobby2StudentMapps.Where(m => m.StudentId == obj.StudentId).ToListAsync();
+        hobbies = await _dbContext.Hobbies.ToListAsync();
+        foreach (var item in hobbies)
+        {
+            foreach (var data in datalist)
+            {
+                if (data.HobbyId == item.HobbyId)
+                {
+                    item.isselected = true;
+                }
+            }
+        }
+        countries = await _dbContext.Countries.ToListAsync();
+        foreach (var item in countries)
+        {
+            if (item.CountryId == obj.Country)
+            {
+                item.IsSeelcted = true;
+            }
+        }
+        states = await _dbContext.States.Where(m => m.CountryId == obj.Country).ToListAsync();
+        foreach (var item in states)
+        {
+            if (item.StateId == obj.State)
+            {
+                item.IsSelected = true;
+            }
+        }
+        cities = await _dbContext.Cities.Where(m => m.StateId == obj.State).ToListAsync();
+        foreach (var item in cities)
+        {
+            if (item.CityId == obj.City)
+            {
+                item.IsSelected = true;
+            }
+        }
+    }
+    protected async void HandleValidSubmit()
+    {
+        obj.Dob = storeddate;
+        #region
+        bool error = false;
+        countrynotselected = (obj.Country == 0) ? "Please select a Country." : null;
+        if (countrynotselected != null) error = true;
+        statenotselected = (obj.State == 0) ? "Please select a State." : null;
+        if (statenotselected != null) error = true;
+        citynotselected = (obj.City == 0) ? "Please select a City." : null;
+        if (citynotselected != null) error = true;
+        Zipcode = (obj.ZipCode == 0) ? "ZipCode is Required" : null;
+        if (Zipcode != null) error = true;
+        for (int i = 0; i < qualifications.Count; i++)
+        {
+            if (qualifications[i].QualifiactionName != null && qualifications[i].University != null && qualifications[i].decimalpercentage != null)
+            {
+                string name = qualifications[i].QualifiactionName;
+                string pattern = @"^[a-zA-Z\s]+$";
+                if (!System.Text.RegularExpressions.Regex.IsMatch(name, pattern) || string.IsNullOrWhiteSpace(name.ToString()))
+                {
+                    qualificationserror = "Qualification Name will only accept letters.";
+                    return;
+                }
+                name = qualifications[i].University;
+                if (!System.Text.RegularExpressions.Regex.IsMatch(name, pattern) || string.IsNullOrWhiteSpace(name.ToString()))
+                {
+                    qualificationserror = "University Name will only accept letters.";
+                    return;
+                }
+                if (qualifications[i].CompletationYear == 0 && qualifications[i].TermYear == 0)
+                {
+                    qualificationserror = "Term Year and Year of Completation cannot be 0";
+                    return;
+                }
+                decimal per = 0;
+                try
+                {
+                    per = decimal.Parse(qualifications[i].decimalpercentage);
+                    if (per > 100)
+                    {
+                        qualificationserror = "Percentage cannot be more than 100.";
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                    qualificationserror = "Percentage is not Valid.";
+                    return;
+                }
+                if (i > count)
+                {
+                    qualifications[i].StudentId = obj.StudentId;
+                    qualifications[i].Percentage = per;
+                    await _dbContext.TblQualifications.AddAsync(qualifications[i]);
+                    await _dbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    try
+                    {
+                        var data = await _dbContext.TblQualifications.Where(m => m.StdQlfId == qualifications[i].StdQlfId).FirstOrDefaultAsync();
+                        data.QualifiactionName = qualifications[i].QualifiactionName;
+                        data.CompletationYear = qualifications[i].CompletationYear;
+                        data.University = qualifications[i].University;
+                        data.StudentId = qualifications[i].StudentId;
+                        data.Percentage = decimal.Parse(qualifications[i].decimalpercentage);
+                        _dbContext.Entry(data).State = EntityState.Modified;
+                        await _dbContext.SaveChangesAsync();
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
+            else
+            {
+                qualificationserror = "All Fields are required in Qualification Section";
+                error = true;
+            }
+        }
+        if (error) return;
+        #endregion
+        if (editContext.Validate())
+        {
+            await stdservice.UpdateStudentsAsync(obj);
+        }
+        else
+        {
+            var invalidFields = editContext.GetValidationMessages();
+            return;
+        }
+        var datalist = await _dbContext.Hobby2StudentMapps.Where(m => m.StudentId == obj.StudentId).ToListAsync();
+        foreach (var data in datalist)
+        {
+            _dbContext.Hobby2StudentMapps.Remove(data);
+            await _dbContext.SaveChangesAsync();
+        }
+        foreach (var item in hobbies)
+        {
+            if (item.isselected == true)
+            {
+                Hobby2StudentMapp hobj = new Hobby2StudentMapp();
+                hobj.HobbyId = item.HobbyId;
+                hobj.StudentId = obj.StudentId;
+                await _dbContext.Hobby2StudentMapps.AddAsync(hobj);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+        NavigationManager.NavigateTo($"/EditEmployee/{Id}", forceLoad: true);
+    }
+    private async void deletequalification(TblQualification item)
+    {
+        if (item != null)
+        {
+            qualifications.Remove(item);
+            if (item.StdQlfId != 0)
+            {
+                _dbContext.TblQualifications.Remove(item);
+                await _dbContext.SaveChangesAsync();
+                qualifications = await _dbContext.TblQualifications.Where(m => m.StudentId == obj.StudentId).ToListAsync();
+            }
+        }
+    }
+    private async void deletecourse(int id)
+    {
+        var data = await _dbContext.Course2StudentMapps.Where(m => m.StudentId == obj.StudentId && m.BatchId == id).FirstOrDefaultAsync();
+        _dbContext.Course2StudentMapps.Remove(data);
+        await _dbContext.SaveChangesAsync();
+        CourseList = await Task.Run(() => stdservice.GetCoursesList(Convert.ToInt32(Id)));
+        StateHasChanged();
+        NavigationManager.NavigateTo($"/EditEmployee/{Id}", forceLoad: true);
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

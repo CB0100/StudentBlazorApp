@@ -1,0 +1,338 @@
+﻿@page "/updatefield/{parameter}"
+@using Microsoft.EntityFrameworkCore;
+@using StudentBlazorApp.Data
+@using StudentBlazorApp;
+@inject ApplicationDbContext context
+@inject StudentServices stdService
+@inject NavigationManager NavigationManager
+<style>
+    p {
+        margin-bottom: 0%;
+    }
+
+    body {
+        background-color: #f2f2f2;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        margin-top: 50px;
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #1b6ec2;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+</style>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+
+                <h3>Update Field</h3>
+                </div>
+                <div class="card-body">
+                @if (mismatched != null)
+                {
+                    <label style="color:#ff2626;">@mismatched</label>
+                }
+                @{
+                    if (!matched)
+                    {
+                        <div>
+                            @if (parameter == "dob")
+                            {
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="PhoneNumber" class="control-label">Phone Number<span style="color:#ff2626;">*</span></label>
+                                        </div>
+                                        <div class="col">
+                                        </div>
+                                    </div>
+                                    <input class="form-control" @bind="@cobj.PhoneNumber" maxlength="10" />
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="EmailAddress" class="control-label">Email Address<span style="color:#ff2626;">*</span></label>
+                                        </div>
+                                        <div class="col">
+                                        </div>
+                                    </div>
+                                    <input class="form-control" @bind="@cobj.EmailAddress" />
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-primary" @onclick="VerifyEmailandPhone">Verify</button>
+                                    <button class="btn btn-danger" @onclick="Cancel">Cancel</button>
+                                </div>
+                            }
+                            else if (parameter == "phonenumber")
+                            {
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="Dob" class="control-label">Date Of Birth<span style="color:#ff2626;">*</span></label>
+                                        </div>
+                                        <div class="col">
+                                        </div>
+                                    </div>
+                                    <input type="date" class="form-control" @bind="@cobj.Dob" />
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="EmailAddress" class="control-label">Email Address<span style="color:#ff2626;">*</span></label>
+                                        </div>
+                                        <div class="col">
+                                        </div>
+                                    </div>
+                                    <input class="form-control" @bind="@cobj.EmailAddress" />
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-primary" @onclick="VerifyEmailandDob">Verify</button>
+                                    <button class="btn btn-danger" @onclick="Cancel">Cancel</button>
+                                </div>
+                            }
+                            else if (parameter == "email")
+                            {
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="Dob" class="control-label">Date Of Birth<span style="color:#ff2626;">*</span></label>
+                                        </div>
+                                        <div class="col">
+                                        </div>
+                                    </div>
+                                    <input type="date" class="form-control" @bind="@cobj.Dob" />
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="PhoneNumber" class="control-label">Phone Number<span style="color:#ff2626;">*</span></label>
+                                        </div>
+                                        <div class="col">
+                                        </div>
+                                    </div>
+                                    <input class="form-control" @bind="@cobj.PhoneNumber" maxlength="10" />
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-primary" @onclick="VerifyDobandPhone">Verify</button>
+                                    <button class="btn btn-danger" @onclick="Cancel">Cancel</button>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            @if (parameter == "dob")
+                            {
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="Dob" class="control-label">Date Of Birth<span style="color:#ff2626;">*</span></label>
+                                        </div>
+                                        <div class="col">
+                                            @if (!string.IsNullOrWhiteSpace(validationError))
+                                            {
+                                                <p class="text-danger">@validationError</p>
+                                            }
+                                        </div>
+                                    </div>
+                                    <input type="date" class="form-control" @bind="@obj.Dob" />
+                                </div>
+
+                            }
+                            else if (parameter == "phonenumber")
+                            {
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-2">
+                                            <label for="PhoneNumber" class="control-label">Phone Number<span style="color:#ff2626;">*</span></label>
+                                        </div>
+                                        <div class="col">
+                                            @if (!string.IsNullOrWhiteSpace(validationError))
+                                            {
+                                                <p class="text-danger">@validationError</p>
+                                            }
+                                        </div>
+                                    </div>
+                                    <input class="form-control" @bind="@obj.PhoneNumber" type="tel" maxlength="10" />
+                                </div>
+
+                            }
+                            else if (parameter == "email")
+                            {
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-2">
+                                            <label for="EmailAddress" class="control-label">Email Address<span style="color:#ff2626;">*</span></label>
+                                        </div>
+                                        <div class="col">
+                                            @if (!string.IsNullOrWhiteSpace(validationError))
+                                            {
+                                                <p class="text-danger">@validationError</p>
+                                            }
+                                        </div>
+                                    </div>
+                                    <input class="form-control" @bind="@obj.EmailAddress" type="email" />
+                                </div>
+
+                            }
+                            <div class="mt-2">
+                                <button class="btn btn-success" @onclick="update">Update</button>
+                                <button class="btn btn-danger" @onclick="Cancel">Cancel</button>
+                            </div>
+                        </div>
+                    }
+                }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string parameter { get; set; }
+    public string mismatched;
+    public string valid;
+    public bool matched;
+    TblStudent cobj = new TblStudent();
+    TblStudent obj = new TblStudent();
+    public long phone;
+    string validationError;
+    public string EmailAddress;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+    public async void update()
+    {
+        try
+        {
+            cobj = await context.TblStudents.Where(m => m.StudentId == stdService.stdid).FirstOrDefaultAsync();
+            bool error = false;
+            if (parameter == "dob")
+            {
+                DateTime date = new DateTime(1950, 1, 1);
+                if (obj.Dob < DateTime.Now && obj.Dob > date)
+                {
+                    cobj.Dob = obj.Dob;
+                }
+                else
+                {
+                    validationError = "DOB can only be in (1/1/1950 to yesterday)";
+                    error = true;
+                }
+            }
+            else if (parameter == "phonenumber")
+            {
+                if (string.IsNullOrWhiteSpace(obj.PhoneNumber.ToString()) || !IsValidPhoneNumber(obj.PhoneNumber.ToString()))
+                {
+                    validationError = "Please enter a valid phone number.(Phone number should be 10 digits)";
+                    error = true;
+                }
+                else
+                {
+                    cobj.PhoneNumber = obj.PhoneNumber;
+                }
+            }
+            else if (parameter == "email")
+            {
+                if (string.IsNullOrWhiteSpace(obj.EmailAddress) || !IsValidEmail(obj.EmailAddress) || (obj.EmailAddress.Length >= 20))
+                {
+                    validationError = "Please enter a valid email address of less than 20 letters.";
+                    error = true;
+                }
+                else
+                {
+                    cobj.EmailAddress = obj.EmailAddress;
+                }
+
+            }
+
+            if (error) return;
+
+            await stdService.UpdateStudentsAsync(cobj);
+            Cancel();
+        }
+        catch (Exception)
+        {
+            string url = $"/";
+            NavigationManager.NavigateTo(url, forceLoad: true);
+        }
+    }
+
+    private bool IsValidEmail(string email)
+    {
+        string emailPattern = @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$";
+        return !string.IsNullOrWhiteSpace(email) && System.Text.RegularExpressions.Regex.IsMatch(email, emailPattern);
+    }
+    private bool IsValidPhoneNumber(string phoneNumber)
+    {
+        //string phoneNumberPattern = @"^\+?[0-9]{1,3}-?[0-9]{3,4}-?[0-9]{4,}$";
+        string phoneNumberPattern = @"^[0-9]{10}$";
+        return !string.IsNullOrWhiteSpace(phoneNumber) && System.Text.RegularExpressions.Regex.IsMatch(phoneNumber, phoneNumberPattern);
+    }
+    void Cancel()
+    {
+        string url = $"/";
+
+        NavigationManager.NavigateTo(url, forceLoad: true);
+    }
+
+    private async Task VerifyDobandPhone()
+    {
+        var data = await context.TblStudents.Where(m => m.Dob == cobj.Dob && m.PhoneNumber == cobj.PhoneNumber).FirstOrDefaultAsync();
+        if (data == null)
+        {
+            mismatched = "Invalid Date Of Birth and PhoneNo.";
+        }
+        else
+        {
+            matched = true;
+            mismatched = null;
+        }
+    }
+    private async Task VerifyEmailandPhone()
+    {
+        var data = await context.TblStudents.Where(m => m.EmailAddress == cobj.EmailAddress && m.PhoneNumber == cobj.PhoneNumber).FirstOrDefaultAsync();
+        if (data == null)
+        {
+            mismatched = "Invalid Email and PhoneNo.";
+        }
+        else
+        {
+            mismatched = null;
+            matched = true;
+        }
+    }
+    private async Task VerifyEmailandDob()
+    {
+        var data = await context.TblStudents.Where(m => m.EmailAddress == cobj.EmailAddress && m.Dob == cobj.Dob).FirstOrDefaultAsync();
+        if (data == null)
+        {
+            mismatched = "Invalid Email and Date Of Birth.";
+        }
+        else
+        {
+            matched = true;
+            mismatched = null;
+        }
+    }
+}

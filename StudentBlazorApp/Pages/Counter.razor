@@ -1,0 +1,20 @@
+﻿@*@page "/counter"
+@inject IJSRuntime jsRuntime
+@using StudentBlazorApp.Pages
+
+<button @onclick="OpenPopup">Open Popup</button>
+
+<PopupWindow @ref="popup" IsOpen="isOpen" Title="Popup Window">
+    <p>This is the content of the popup window.</p>
+</PopupWindow>
+
+@code {
+    private bool isOpen;
+    private PopupWindow popup;
+
+    private void OpenPopup()
+    {
+        isOpen = true;
+    }
+}
+*@

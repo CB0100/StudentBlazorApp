@@ -1,0 +1,173 @@
+﻿@page "/fetchdata/{id}"
+@using System.Globalization
+@using Microsoft.EntityFrameworkCore;
+@using StudentBlazorApp.Data
+@using System.Collections.Generic
+@using Microsoft.AspNetCore.Components
+@inject StudentServices stdservice
+@inject ApplicationDbContext _dbContext
+@inject NavigationManager NavigationManager
+
+<h3>Coaching Fees Receipt</h3>
+
+<div class="receipt-container">
+    <div class="receipt-header">
+        <div class="logo-container">
+            <img src="/images/logo.png" alt="Company Logo" />
+        </div>
+        <div class="company-details">
+            <p>XYZ Coaching Center</p>
+            <p>123 Main Street</p>
+            <p>City, State, ZIP</p>
+            <p>Phone: (123) 456-7890</p>
+        </div>
+    </div>
+    @if (receiptdata != null)
+    {
+        <div class="receipt-body">
+            <div class="receipt-info">
+                <p>Receipt No: <span class="info-value">@receiptdata.c2sMapp.Id</span></p>
+                <p>Date: <span class="info-value">@receiptdata.c2sMapp.CreatedOn.ToString("dd/MM/yyyy")</span></p>
+                <p>Recipient: <span class="info-value">@receiptdata.student.FirstName</span></p>
+                <p>Email: <span class="info-value">@receiptdata.student.EmailAddress</span></p>
+            </div>
+
+            <table class="fee-table">
+                <thead>
+                    <tr>
+                        <th>Specification</th>
+                        <th>Course</th>
+                        <th>Batch</th>
+                        <th>Instrutor</th>
+                        <th>Bought On</th>
+                        <th>Fees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@receiptdata.Specprop.SpecName</td>
+                        <td>@receiptdata.CourseProp.CourseName</td>
+                        <td>@receiptdata.BatchProp.BatchName</td>
+                        <td>@receiptdata.BatchProp.InstructorName</td>
+                        <td>@receiptdata.c2sMapp.CreatedOn</td>
+                        <td>@receiptdata.CourseProp.Fees</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="text-right">Tax (5%):</td>
+                        <td>@CalculateTax().ToString("0.00")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">Total:</td>
+                        <td>@receiptdata.c2sMapp.TotalPaid.ToString("0.00")</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+    private ViewModel receiptdata;
+
+    protected override async Task OnInitializedAsync()
+    {
+        List<Course2Student> c2slist = await _dbContext.Course2StudentMapps.ToListAsync();
+        List<Specification> speclist = await _dbContext.Specifications.ToListAsync();
+        List<TblStudent> students = await _dbContext.TblStudents.ToListAsync();
+        List<Course> courses = await _dbContext.Courses.ToListAsync();
+        List<Batch> batches = await _dbContext.Batches.ToListAsync();
+        var Courseslist = from e in c2slist
+                          join d in courses on e.CourseId equals d.CourseId into table1
+                          from d in table1.ToList()
+                          join i in batches on e.BatchId equals i.BatchId into table2
+                          from i in table2.ToList()
+                          join k in students on e.StudentId equals k.StudentId into table3
+                          from k in table3.ToList()
+                          join r in speclist on d.SpecId equals r.SpecId into table4
+                          from r in table4.ToList()
+                          select new ViewModel
+                              {
+                                  student = k,
+                                  c2sMapp = e,
+                                  CourseProp = d,
+                                  BatchProp = i,
+                                  Specprop = r
+                              };
+
+        receiptdata = Courseslist.Where(m => m.c2sMapp.Id == Convert.ToInt32(id)).FirstOrDefault();
+    }
+
+    decimal CalculateTax()
+    {
+        decimal subtotal = receiptdata.CourseProp.Fees;
+        decimal taxRate = receiptdata.c2sMapp.tax;
+        return subtotal * taxRate;
+    }
+
+}
+
+<style>
+    .receipt-container {
+        margin: auto;
+        width: 600px;
+        padding: 20px;
+        border: 1px solid #ccc;
+    }
+
+    .receipt-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .logo-container img {
+        height: 60px;
+    }
+
+    .company-details p {
+        margin: 0;
+    }
+
+    .receipt-body {
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
+
+    .receipt-info p {
+        margin: 0;
+        margin-bottom: 10px;
+    }
+
+    .info-value {
+        font-weight: bold;
+    }
+
+    .fee-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+
+        .fee-table th,
+        .fee-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        .fee-table th {
+            background-color: #f9f9f9;
+            text-align: left;
+        }
+
+        .fee-table tfoot td {
+            font-weight: bold;
+        }
+
+    .text-right {
+        text-align: right;
+    }
+</style>

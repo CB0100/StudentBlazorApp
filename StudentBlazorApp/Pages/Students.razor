@@ -1,0 +1,142 @@
+﻿@page "/students"
+@using Microsoft.EntityFrameworkCore;
+@using StudentBlazorApp.Data
+@inject StudentServices stdService
+@inject ApplicationDbContext context
+@inject NavigationManager NavigationManager
+
+<style>
+    p {
+    }
+</style>
+@if (stdobj is null)
+{
+    <p><em>Loading... !</em></p>
+}
+else
+{
+    <div style="display:flex;justify-content:space-between;align-content:center" class="border-bottom mb-1 pb-2">
+        <div>
+            <h2>Student List</h2>
+        </div>
+        <div>
+            <NavLink class="btn btn-primary nav-link" href="AddStudent">
+                <span class="btn oi oi-plus" aria-hidden="true"></span>Add New
+            </NavLink>
+        </div>
+    </div>
+    
+    <table class="table border-bottom">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>DOB</th>
+                <th>Father</th>
+                <th>PhoneNo</th>
+                <th>Email</th>
+                <th>City</th>
+                <th>Role</th>
+                <th>Update Fields</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var std in stdobj.OrderBy(m => m.student.StudentId))
+            {
+                if (std.student.IsActive)
+                {
+                    <tr>
+                        <td>@std.student.RegistrationId</td>
+                        <td>@std.student.FirstName @std.student.LastName</td>
+                        @if (std.student.Gender == "Male")
+                        {
+                            <td>M</td>
+                        }
+                        else
+                        {
+                            <td>F</td>
+                        }
+                        <td>@std.student.Dob.Date.ToString("dd/MM/yyyy")</td>
+                        <td>@std.student.FatherName</td>
+                        <td>@std.student.PhoneNumber</td>
+                        <td>@std.student.EmailAddress</td>
+                        <td>@std.cityprop.CityName</td>
+                        <td>@std.RoleProp.RoleName</td>
+                        @*<td>
+            @{
+            var data = hobbieslist.Where(m => m.hobbieslist.StudentId == std.student.StudentId).ToList();
+            foreach (var item in data)
+            {
+            @item.singlehobbies.HobbyName
+
+            <br />
+            }
+            }
+            </td>
+            <td>
+            @{
+            var qualification = qualificationlist.Where(m => m.Qualification.StudentId == std.student.StudentId).ToList();
+            foreach (var item in qualification)
+            {
+            @item.Qualification.QualifiactionName
+            <br />
+            }
+            }
+            </td>
+            <td>@std.stateprop.StateName</td>
+            <td>@std.countryprop.CountryName</td>*@
+                        <td>
+                            <button class=" border ms-1 btn btn-primary" @onclick="() => UpdateField(1,std.student.StudentId)"><span class="oi oi-calendar"></span> DOB</button>
+                            <button class="border ms-1  btn  btn-primary" @onclick="() => UpdateField(2,std.student.StudentId)"><span class="oi oi-phone"></span> Phone</button>
+                            <button class=" border ms-1 btn btn-primary" @onclick="() => UpdateField(3,std.student.StudentId)"><span class="oi oi-envelope-closed"></span> Email</button>
+                        </td>
+                        <td style="padding-top:1%;">
+                            <div class="d-inline-flex">
+                                <p class="oi oi-pencil" style="color:blue;font-size: 120%;" @onclick="(e) => Editstudent(std.student.StudentId)"></p>
+                                <p class="oi oi-trash ms-1" style="color:red;font-size: 120%;" @onclick="(e) => DeleteStudent(std.student.StudentId)"></p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<ViewModel> stdobj;
+    List<ViewModel> hobbieslist;
+    List<ViewModel> qualificationlist;
+    TblStudent obj = new TblStudent();
+    protected override async Task OnInitializedAsync()
+    {
+        stdobj = await Task.Run(() => stdService.GetStudentsList());
+        qualificationlist = await Task.Run(() => stdService.GetQualificationList());
+        hobbieslist = await Task.Run(() => stdService.GetHobbyList());
+    }
+    protected async void DeleteStudent(int Id)
+    {
+        obj = await context.TblStudents.Where(m => m.StudentId == Id).FirstOrDefaultAsync();
+        obj.IsActive = false;
+        await stdService.UpdateStudentsAsync(obj);
+        NavigationManager.NavigateTo("/", forceLoad: true);
+
+    }
+    public void UpdateField(int buttonNumber, int id)
+    {
+        string parameter = null;
+        if (buttonNumber == 1) parameter = "Dob".ToLower();
+        if (buttonNumber == 2) parameter = "PhoneNumber".ToLower();
+        if (buttonNumber == 3) parameter = "Email".ToLower();
+
+        stdService.stdid = id;
+        string url = $"updatefield/{parameter}";
+        NavigationManager.NavigateTo(url);
+    }
+    private async void Editstudent(int id)
+    {
+        NavigationManager.NavigateTo($"/EditEmployee/{id}");
+    }
+}
