@@ -894,6 +894,7 @@
     }
     protected override async Task OnInitializedAsync()
     {
+        var show = stdservice.shownav;
         editContext = new EditContext(obj);
         specifications = await _dbContext.Specifications.ToListAsync();
         courses = await _dbContext.Courses.ToListAsync();

@@ -8,13 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddScoped<StudentServices>();
-
+builder.Services.AddSingleton<StudentServices>();
+builder.Services.AddScoped<DarkModeService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
     //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-}/*,ServiceLifetime.Transient*/);
+},ServiceLifetime.Singleton);
 
 var app = builder.Build();
 

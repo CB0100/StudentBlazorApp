@@ -1,0 +1,13 @@
+﻿<!-- DarkModeButton.razor -->
+@inject DarkModeService DarkModeService
+
+<button @onclick="ToggleDarkMode">
+    Toggle Dark Mode
+</button>
+
+@code {
+    private void ToggleDarkMode()
+    {
+        DarkModeService.ToggleDarkMode();
+    }
+}

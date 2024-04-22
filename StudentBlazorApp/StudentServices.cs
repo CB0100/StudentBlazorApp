@@ -7,6 +7,7 @@ namespace StudentBlazorApp
     {
         public int stdid;
         public bool shownav = true;
+        public int role = 1;
         private readonly ApplicationDbContext _dbContext;
 
         public StudentServices(ApplicationDbContext DBContext)
@@ -19,7 +20,7 @@ namespace StudentBlazorApp
             string RegistrationId = string.Empty;
             int RegNo = 0;
             RegNo = await _dbContext.TblStudents.AnyAsync() ? await _dbContext.TblStudents.MaxAsync(m => m.StudentId) : 0;
-            RegNo = RegNo == 0 ? 1 : RegNo;
+            RegNo = RegNo == 0 ? 1 : (RegNo+1);
             RegistrationId = "STU" + RegNo.ToString("D6") /*string.Format("0:000000", RegNo)*/;
             return RegistrationId;
         }

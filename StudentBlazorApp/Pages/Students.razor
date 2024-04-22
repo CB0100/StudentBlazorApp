@@ -6,7 +6,8 @@
 @inject NavigationManager NavigationManager
 
 <style>
-    p {
+   .oi {
+       cursor:pointer;
     }
 </style>
 @if (stdobj is null)
@@ -52,11 +53,11 @@ else
                         <td>@std.student.FirstName @std.student.LastName</td>
                         @if (std.student.Gender == "Male")
                         {
-                            <td>M</td>
+                            <td class="text-center">M</td>
                         }
                         else
                         {
-                            <td>F</td>
+                            <td class="text-center">F</td>
                         }
                         <td>@std.student.Dob.Date.ToString("dd/MM/yyyy")</td>
                         <td>@std.student.FatherName</td>

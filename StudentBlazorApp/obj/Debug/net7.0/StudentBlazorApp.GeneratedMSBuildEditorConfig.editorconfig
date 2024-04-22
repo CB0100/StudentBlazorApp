@@ -9,73 +9,77 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = StudentBlazorApp
 build_property.RootNamespace = StudentBlazorApp
-build_property.ProjectDir = D:\Anand\RND\StudentBlazorApp\StudentBlazorApp\
+build_property.ProjectDir = K:\Ashutosh_Work\Anand\RND\StudentBlazorApp\StudentBlazorApp\
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\Anand\RND\StudentBlazorApp\StudentBlazorApp
+build_property.MSBuildProjectDirectory = K:\Ashutosh_Work\Anand\RND\StudentBlazorApp\StudentBlazorApp
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/App.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/App.razor]
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/AddStudent.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/AddStudent.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkU3R1ZGVudC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/Counter.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/CourseMaster.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/CourseMaster.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291cnNlTWFzdGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/EditStudent.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/EditStudent.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRWRpdFN0dWRlbnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/FetchData.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/FetchData.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmV0Y2hEYXRhLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/Login.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/Login.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/LoginPage.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/LoginPage.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW5QYWdlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/Students.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/Students.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3R1ZGVudHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/UpdateField.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/UpdateField.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXBkYXRlRmllbGQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Shared/SurveyPrompt.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Shared/DarkModeButton.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXERhcmtNb2RlQnV0dG9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Shared/SurveyPrompt.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/_Imports.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Shared/MainLayout.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Shared/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-iebbxjwrr4
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Shared/NavMenu.razor]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Shared/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-th7t62arrn
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/Error.cshtml]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/_Host.cshtml]
+[K:/Ashutosh_Work/Anand/RND/StudentBlazorApp/StudentBlazorApp/Pages/_Host.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

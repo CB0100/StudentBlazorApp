@@ -3462,30 +3462,25 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\CBPC-57\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
-    "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\CBPC-33\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Anand\\RND\\StudentBlazorApp\\StudentBlazorApp\\StudentBlazorApp.csproj",
+      "projectUniqueName": "K:\\Ashutosh_Work\\Anand\\RND\\StudentBlazorApp\\StudentBlazorApp\\StudentBlazorApp.csproj",
       "projectName": "StudentBlazorApp",
-      "projectPath": "D:\\Anand\\RND\\StudentBlazorApp\\StudentBlazorApp\\StudentBlazorApp.csproj",
-      "packagesPath": "C:\\Users\\CBPC-57\\.nuget\\packages\\",
-      "outputPath": "D:\\Anand\\RND\\StudentBlazorApp\\StudentBlazorApp\\obj\\",
+      "projectPath": "K:\\Ashutosh_Work\\Anand\\RND\\StudentBlazorApp\\StudentBlazorApp\\StudentBlazorApp.csproj",
+      "packagesPath": "C:\\Users\\CBPC-33\\.nuget\\packages\\",
+      "outputPath": "K:\\Ashutosh_Work\\Anand\\RND\\StudentBlazorApp\\StudentBlazorApp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-        "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\",
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\CBPC-57\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\CBPC-33\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -3493,9 +3488,7 @@
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "C:\\Program Files\\dotnet\\library-packs": {},
-        "D:\\Anand\\ClassStar\\Application\\My.ClasStars": {},
-        "https://api.nuget.org/v3/index.json": {},
-        "https://pnq.pkgs.visualstudio.com/Classtars/_packaging/pnqnuget/nuget/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net7.0": {
@@ -3547,7 +3540,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }

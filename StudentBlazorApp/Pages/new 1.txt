@@ -1,0 +1,15 @@
+<select class="form-control" @onchange="OnTeacherSelectionChanged">
+                                            @if (TeachersList != null)
+                                            {
+                                                bool NoneSelected = selectedteacherlist?.Count == 0;
+                                                <option value="None" selected="@NoneSelected" class="@(NoneSelected ? "selected-option" : "" )">None</option>
+                                                bool allselected = selectedteacherlist?.Count == TeachersList?.Count;
+                                                <option value="SelectAll" selected="@allselected" class="@(allselected ? "selected-option" : "" )">Select All</option>
+                                                @foreach (var teacher in TeachersList)
+                                                {
+                                                    bool isSelected = selectedteacherlist?.Contains(teacher.EmployeeID) ?? false;
+                                                    <option value="@teacher.EmployeeID" selected="@isSelected" class="@((isSelected) ? "selected-option" : "")">@teacher.EmployeeName</option>
+                                                }
+
+                                            }
+                                        </select>

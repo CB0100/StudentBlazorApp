@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-
+@inject DarkModeService DarkModeService
 @inject StudentServices stdservice
 @inject NavigationManager navmanager
 <PageTitle>StudentBlazorApp</PageTitle>
@@ -16,9 +16,10 @@
     }
 
     <main>
-
-        <article style="zoom: 0.8;transform-origin: top left;" class="content px-4">
-            @Body
+        <article style="zoom: 0.8;transform-origin: top left;" class="content px-4 abc">
+            <div class="@($"main-content {(DarkModeService.IsDarkMode ? "dark-mode" : "")}")">
+                @Body
+            </div>
         </article>
     </main>
 </div>
